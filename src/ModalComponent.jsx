@@ -22,13 +22,8 @@ function ModalComponent({
   };
 
   return (
-    <Modal
-      {...props}
-      size={size}
-      aria-labelledby="contained-modal-title-vcenter"
-      centered
-    >
-      <Modal.Header closeButton>
+    <Modal {...props} size={size} aria-labelledby="contained-modal-title-vcenter" centered>
+      <Modal.Header closeButton onHide={handleClose}>
         <Modal.Title>{title}</Modal.Title>
       </Modal.Header>
       <Modal.Body>{children}</Modal.Body>

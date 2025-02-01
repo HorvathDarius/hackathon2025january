@@ -16,15 +16,10 @@ const App2 = () => {
   const [image, setImage] = useState(markedMap);
   const [creatingRectangle, setCreatingRectangle] = useState(false);
   const [rectangles, setRectangles] = useState([]);
-  const sections = [
-    "Občerstvenie",
-    "Remeselníctvo",
-    "Spotrebný tovar",
-    "Voľné vystúpenie",
-  ];
+  const sections = ["Občerstvenie", "Remeselníctvo", "Spotrebný tovar", "Voľné vystúpenie"];
   const [addSectionText, setAddSectionText] = useState("Pridat sekciu");
-  let moveableRef = useRef(null); // Reference to Moveable component
-  const [target, setTarget] = useState(null); // Target element for Moveable
+  let moveableRef = useRef(null);
+  const [target, setTarget] = useState(null);
 
   useEffect(() => {
     moveableRef.current = null;
@@ -39,6 +34,27 @@ const App2 = () => {
       setImage(terrainMarkedMapAfter);
     } else {
       setImage(markedMapAfter);
+    }
+  };
+
+  const changeRectangleType = () => {
+    const rectangle = target;
+    const isGrid = rectangle.classList.toggle("grid-active"); // Toggle grid state
+
+    if (isGrid) {
+      rectangle.style.display = "grid";
+      rectangle.style.gridTemplateColumns = "repeat(2, 1fr)";
+      rectangle.style.gridTemplateRows = "1fr";
+
+      for (let i = 0; i < 24; i++) {
+        const cell = document.createElement("div");
+        cell.classList.add("grid-cell");
+        cell.style.border = "1px solid gray";
+        rectangle.appendChild(cell);
+      }
+    } else {
+      rectangle.style.display = "";
+      rectangle.innerHTML = "";
     }
   };
 
@@ -74,10 +90,7 @@ const App2 = () => {
 
   return (
     <>
-      <div
-        className="relative flex items-center justify-center"
-        onClick={() => setModalShow(true)}
-      >
+      <div className="relative flex items-center justify-center" onClick={() => setModalShow(true)}>
         <img src={image} alt="mapa" className="w-full object-cover z-0" />
       </div>
 
@@ -98,6 +111,7 @@ const App2 = () => {
                 width: 260, // Nový stánok začína na minimálnej šírke
                 name: `Stánok 1`,
                 singleStallColor: "bg-gray-500",
+                isOccupied: true,
               },
             ]}
             stallColor={"bg-yellow-200"}
@@ -153,9 +167,7 @@ const App2 = () => {
 
       <div className="absolute top-10 flex-col right-10 flex justify-center mt-4 bg-white p-4 rounded shadow-lg max-w-sm">
         <span className="text-xl font-bold mb-2">Akcie</span>
-        <p className="text-sm text-gray-600">
-          Tu môžete pridať nové sekcie alebo zmeniť pohľad na mapu.
-        </p>
+        <p className="text-sm text-gray-600">Tu môžete pridať nové sekcie alebo zmeniť pohľad na mapu.</p>
         <button
           onClick={handleSetImage}
           className="rounded my-2 bg-[#B20308] hover:bg-[#925052] text-white font-semibold py-2.5 px-5 rounded-lg 
@@ -181,6 +193,31 @@ const App2 = () => {
           {addSectionText}
         </button>
       </div>
+
+      {target && (
+        <div className="absolute top-10 flex-col left-10 flex justify-center mt-4 bg-white p-4 rounded shadow-lg max-w-sm">
+          <button
+            className={`mb-2 rounded relative flex items-center justify-center px-5 py-2.5 text-md font-medium tracking-wide uppercase rounded-lg 
+                transition-all duration-200 ease-out transform hover:scale-[1.02] active:scale-[0.98] shadow-sm
+                bg-red-800 text-white hover:bg-red-700
+                before:absolute before:inset-0 before:rounded-lg before:bg-white/5 before:transition-opacity
+                hover:before:opacity-100 before:opacity-0 before:duration-200`}
+            onClick={changeRectangleType}
+          >
+            <div className="relative z-10">Mestske stanky</div>
+          </button>
+          <button
+            className={`mb-2 rounded relative flex items-center justify-center px-5 py-2.5 text-md font-medium tracking-wide uppercase rounded-lg 
+                transition-all duration-200 ease-out transform hover:scale-[1.02] active:scale-[0.98] shadow-sm
+                bg-red-800 text-white hover:bg-red-700
+                before:absolute before:inset-0 before:rounded-lg before:bg-white/5 before:transition-opacity
+                hover:before:opacity-100 before:opacity-0 before:duration-200`}
+            onClick={changeRectangleType}
+          >
+            <div className="relative z-10">Stanky jarmocanov</div>
+          </button>
+        </div>
+      )}
 
       {target && (
         <div className="sticky w-60 h-20 bottom-10 left-10">
